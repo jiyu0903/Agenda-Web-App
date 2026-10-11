@@ -59,3 +59,7 @@ docs/_build/
 
 # Database files
 *.db
+
+# Netlify build output
+/public/
+/node_modules/

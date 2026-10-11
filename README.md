@@ -1,38 +1,46 @@
-Diary
-=====
+# Bloom & Bond Diary
 
-*Diary* is simple diary web based application developed with Python, Flask, MongoDB and love.
+A Flask-powered diary app for local development, configured to deploy on Netlify as a static site with serverless API functions and durable Netlify Blobs storage.
 
+## Local Flask development
 
-## Get started!
-First clone or [download](https://github.com/GruPy-RN/agenda_flask/archive/master.zip) this repository:
-
-```sh
-$ git clone git@github.com:GruPy-RN/agenda_flask.git
+```powershell
+python manage.py
 ```
 
-the next step is create a virtualenv to install all dependencies to:
+The local Flask app uses SQLite. Run the regression suite with:
 
-```sh
-$ cd agenda_flask
-$ vritualenv --no-site-packages .venv
-$ source .venv/bin/activate
+```powershell
+pytest -q
 ```
 
-once the virtualenv is created and activated, we can install all dependencies with pip:
+## Deploy to Netlify
+
+1. Push this project to a Git repository and import it in Netlify.
+2. Netlify detects `netlify.toml`; the configured build command is `npm run build`, the publish directory is `public`, and API functions are in `netlify/functions`.
+3. Deploy the site. Netlify Blobs is used by the functions for entries, archive records, and reminders; the deployed app does not use the local SQLite database.
+
+To build the static site locally before deployment:
 
 ```sh
-$ pip install -r requirements
+npm install
+npm run build
 ```
 
-Don't forget to set the `MONGO_URI` environment variable like so:
+The build script converts the Flask template's static asset references and copies assets into the generated `public/` folder. That folder is build output and is intentionally excluded from version control.
+
+For local Netlify function testing, install/use the Netlify CLI and run:
 
 ```sh
-$ export MONGO_URI='mongodb://username:password@host:27017/diary'
+npx netlify dev
 ```
 
-Now, start the server and have fun!
+## Important privacy note
 
-```sh
-$ python manage.py runserver
-```
+The app currently has no authentication. Anyone who can access the deployed URL can read, add, archive, and restore diary entries and reminders. Do not deploy personal diary data publicly until access control is added or the Netlify site is otherwise protected.
+
+## Deployment architecture
+
+- Flask + SQLite: local development and tests.
+- Static HTML/CSS/JavaScript: generated for Netlify by `scripts/build.mjs`.
+- Netlify Functions + Netlify Blobs: deployed API and persistent hosted data.

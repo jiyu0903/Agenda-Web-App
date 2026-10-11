@@ -56,3 +56,6 @@ docs/_build/
 
 # Virtualenv
 .venv
+
+# Database files
+*.db
